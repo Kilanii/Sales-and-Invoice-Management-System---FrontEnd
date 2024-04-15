@@ -49,3 +49,17 @@ footer {
   padding: 18px;
   border-top: 0.1rem solid gainsboro;
 }
+p{
+  text-align: center;
+}
+.signbtn{
+  background-color: #00695C;
+  border-color: #00695C;
+}
+.signbtn:hover{
+  background-color: #00695C;
+  border-color: #00695C;
+}
+a{
+  color: #00695C
+}

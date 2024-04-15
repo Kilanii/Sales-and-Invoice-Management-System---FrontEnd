@@ -1,0 +1,9 @@
+export const baseUrl = `http://127.0.0.1:8000/api/auth/`;
+export const REGISTER = "register";
+export const LOGIN = "login";
+export const LOGOUT = "logout";
+export const USER = "user";
+export const category = "category/get-categories";
+export const createCategory = "category/create-category";
+export const UpdateCategory = "category/update-category" ;
+export const deleteCategory = "category/delete-category"
