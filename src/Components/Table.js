@@ -1,54 +1,48 @@
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Table } from "react-bootstrap";
 
-function Table({ header, data, delete: handleDelete}) {  
 
-const headerShow = header.map((item) => <th key={item.key}>{item.name}</th>);
-// Body Show
-const dataShow = data.map((item, key) => (
-  <tr key={key}>
-    <td>{key + 1}</td>
-    {header.map((item2, key2) => (
-      <td key={key2}>{item[item2.key]}</td>
-    ))}
-    <td>
-      <div className="d-flex align-items-center gap-2">
-        <Link to={`${item.id}`}>
-          <FontAwesomeIcon icon={faPenToSquare} fontSize={"19px"} />
-        </Link>
-        <FontAwesomeIcon
-          onClick={() => handleDelete(item.id)}
-          icon={faTrash}
-          fontSize={"19px"}
-          color="red"
-          cursor={"pointer"}
-        />
-      </div>
-    </td>
-  </tr>
-));
+function TableShow(header , data) {
+  const headerShow = header.map((header, key) => (
+    <th key={key}>
+      {header.name}
+    </th>
+  ))  
+  const dataShow = data.map((item, key) => (
+    <tr key={key}>
+      <td>{item.name}</td>
+      <td>
+        <div className="d-flex align-items-center gap-2">
+            <Link to={`${item.id}`}>
+              <FontAwesomeIcon fontSize={"19px"} icon={faPenToSquare}/>
+            </Link>
+            <FontAwesomeIcon 
+            onClick={() => delete(item.id)}
+            fontSize={"19px"}
+            color="red"
+            cursor={"pointer"}
+            icon={faTrash}
+            />
+        </div>
+      </td>
+    </tr>
+  ))
 
-// Affichage
-return (
-  <table className="table table-striped">
-    <thead>
-      <tr>
-        <th>id</th>
-        {headerShow}
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {data.length === 0 && (
-        <tr text-align="center">
-          <td colSpan={header.length + 2}>Loading..</td>
+  return (
+    <Table className="table table-striped">
+      <thead>
+        <tr>
+          {headerShow}
+          <th>Actions</th>
         </tr>
-      )}
-      {dataShow}
-    </tbody>
-  </table>
-);
-
+      </thead>
+      <tbody>
+        {dataShow.lenghth ===0 ? <tr>Loading...</tr> : dataShow}
+      </tbody>
+    </Table>
+  );
 }
-export default Table;
+
+export default TableShow;

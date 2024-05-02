@@ -23,7 +23,7 @@ function SignIn() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const result = await axios.post(`http://127.0.0.1:8000/api/auth/login`,formData
+      const result = await Axios.post(`/auth/${LOGIN}`,formData
       );
       const token = result.data.data.token;
       localStorage.setItem("usertoken", token);

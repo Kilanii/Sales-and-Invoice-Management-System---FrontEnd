@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import {useState } from "react";
 import { Button, Form } from "react-bootstrap";
+import { Axios } from "../../../../Api/axios";
+import {updatSupplier} from "../../../../Api/Api";
+import { useParams } from "react-router-dom";
+
 function UpdateSupplier() {
     const [form, setForm] = useState({
         name: "",
@@ -9,6 +12,7 @@ function UpdateSupplier() {
         details: "",
         p_credit: "",
       });
+      const { id } = useParams();
     
       const handleContactChange = (e) => {
         const value = e.target.value;
@@ -25,13 +29,17 @@ function UpdateSupplier() {
     
       const handleSubmit = async (e) => {
         e.preventDefault();
+    
         try {
-          await axios.post(`http://127.0.0.1:8000/api/supplier/create-supplier`, form);
-          alert("New product added.");
+           await Axios.put(`/supplier/${updatSupplier}/${id}`, form );
+          alert("Succeful");
+          window.location.pathname = "dashboard/suppliers";
+          console.log('Suppliers mise à jour avec succès:');
+          // Optionally, you could add code here to handle successful updates (e.g., redirecting the user to a different page).
         } catch (error) {
-          console.error(error);
+          console.log(error)
         }
-      }
+      };
   return (
     <Form onSubmit={handleSubmit}>
       <h1>Add New Supplier</h1>
@@ -84,19 +92,8 @@ function UpdateSupplier() {
         />
       </Form.Group>
 
-      <Form.Group controlId="p_credit" className="mb-6">
-        <Form.Label>Previous Credit Balance</Form.Label>
-        <Form.Control
-          type="text"
-          name="p_credit"
-          placeholder="Enter Previous Credit Balance..."
-          value={form.p_credit}
-          onChange={handleChange}
-          required
-        />
-      </Form.Group>
 
-      <Button disabled={disable} type="submit" className="btn btn-primary">
+      <Button disabled={form.length < 5} type="submit" className="btn btn-primary">
           Add Supplier
       </Button>
     </Form>

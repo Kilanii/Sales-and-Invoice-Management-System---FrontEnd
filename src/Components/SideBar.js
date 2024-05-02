@@ -42,7 +42,7 @@ function SideBar() {
         }}
       >
         <NavLink
-          to={"/dashboard"}
+          to={"dashboard"}
           className="d-flex align-items gap-2 side-bar-link"
         >
           <FontAwesomeIcon
@@ -55,16 +55,6 @@ function SideBar() {
           </p>
         </NavLink>
 
-        <NavLink to={"tax"} className="d-flex align-items gap-2 side-bar-link">
-          <FontAwesomeIcon
-            icon={faPercent}
-            className="icons"
-            style={{ width: isOpen ? "20%" : "100%" }}
-          />
-          <p className="m-0" style={{ display: isOpen ? "block" : "none" }}>
-            tax
-          </p>
-        </NavLink>
 
         <NavLink
           to={"categories"}
@@ -79,22 +69,9 @@ function SideBar() {
             category
           </p>
         </NavLink>
-        <NavLink
-          to={"AddCategory"}
-          className="d-flex align-items gap-2 side-bar-link"
-        >
-          <FontAwesomeIcon
-            icon={faPlus}
-            className="icons"
-            style={{ width: isOpen ? "20%" : "100%" }}
-          />
-          <p className="m-0" style={{ display: isOpen ? "block" : "none" }}>
-            Add category
-          </p>
-        </NavLink>
 
         <NavLink
-          to={"product"}
+          to={"products"}
           className="d-flex align-items gap-2 side-bar-link"
         >
           <FontAwesomeIcon
@@ -104,17 +81,6 @@ function SideBar() {
           />
           <p className="m-0" style={{ display: isOpen ? "block" : "none" }}>
             product
-          </p>
-        </NavLink>
-
-        <NavLink to={"unit"} className="d-flex align-items gap-2 side-bar-link">
-          <FontAwesomeIcon
-            icon={faBars}
-            className="icons "
-            style={{ width: isOpen ? "20%" : "100%" }}
-          />
-          <p className="m-0" style={{ display: isOpen ? "block" : "none" }}>
-            unit
           </p>
         </NavLink>
 
@@ -147,7 +113,7 @@ function SideBar() {
         </NavLink>
 
         <NavLink
-          to={"supplier"}
+          to={"suppliers"}
           className="d-flex align-items gap-2 side-bar-link"
         >
           <FontAwesomeIcon
@@ -156,12 +122,12 @@ function SideBar() {
             style={{ width: isOpen ? "20%" : "100%" }}
           />
           <p className="m-0" style={{ display: isOpen ? "block" : "none" }}>
-            supplier
+            suppliers
           </p>
         </NavLink>
 
         <NavLink
-          to={"customer"}
+          to={"customers"}
           className="d-flex align-items gap-2 side-bar-link"
         >
           <FontAwesomeIcon

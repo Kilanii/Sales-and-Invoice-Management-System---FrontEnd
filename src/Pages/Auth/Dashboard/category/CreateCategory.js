@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { baseUrl, createCategory } from "../../../../Api/Api";
+import {createCategory } from "../../../../Api/Api";
 import { Axios } from "../../../../Api/axios";
 import { Button, Form } from "react-bootstrap";
-import axios from "axios";
+
 
 function Addcategory() {
   const [title, setTitle] = useState("");
@@ -12,8 +12,9 @@ function Addcategory() {
     const form = new FormData();
     form.append("name", title);
     try {
-      await axios.post(`http://127.0.0.1:8000/api/category/create-category`, form);
+      await Axios.post(`/category/${createCategory}`, form);
       alert("New category Added");
+      window.location.pathname = "dashboard/categories";
     } catch (error) {
       console.log(error);
     }

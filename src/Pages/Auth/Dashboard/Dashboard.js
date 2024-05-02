@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import TopBar from "../../../Components/TopBar";
 import "./dashboard.css";
 import SideBar from "../../../Components/SideBar";
+import "../../../index.css"
 
 function Dashboard() {
   return (

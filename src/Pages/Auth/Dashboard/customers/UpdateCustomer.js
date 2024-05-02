@@ -1,24 +1,28 @@
 import { useEffect, useState } from "react";
-import { USER } from "../../../../Api/Api";
-import axios from "axios";
+import { updatCustomer } from "../../../../Api/Api";
 import { Axios } from "../../../../Api/axios";
 import { useParams } from "react-router-dom";
 
-function User() {
+function UpdateCustomer() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [disable, setDisable] = useState(true);
-  const {id} = useParams();
-    useEffect(() => {
-    Axios.get(`${USER}/${id}`).then((data) => {
-      setName(data.data.name);
-      setEmail(data.data.email);
-    }).then(() => setDisable(false));
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    Axios.get(`/customer/${updatCustomer}/${id}`)
+      .then((data) => {
+        setName(data.data.name);
+        setEmail(data.data.email);
+      })
+      .then(() => setDisable(false));
   }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      await Axios.post(`${USER}/${id}`, {
+      await Axios.put(`/customer/${updatCustomer}/${id}`, {
         name: name,
         email: email,
       });
@@ -29,7 +33,7 @@ function User() {
   return (
     <form onSubmit={handleSubmit}>
       <h1>Formulaire d'inscription</h1>
-      <label for="name">User Name</label>
+      <label for="name">Customer Name</label>
       <input
         placeholder="User Name"
         type="text"
@@ -55,4 +59,4 @@ function User() {
     </form>
   );
 }
-export default User;
+export default UpdateCustomer;

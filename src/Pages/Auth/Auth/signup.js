@@ -6,7 +6,6 @@ import "../../../signup_signin.css";
 import Cookie from "cookie-universal";
 import { REGISTER } from "../../../Api/Api";
 import { Axios } from "../../../Api/axios";
-import axios from "axios";
 
 
 function Signup() {
@@ -16,27 +15,31 @@ function Signup() {
     password: "",
     confirmPassword: "",
   });
-  const [errors, setErrors] = useState("");
+
+  const [errors, setErrors] = useState({});
   const cookie = Cookie();
+
   function handleChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    // Réinitialisez les erreurs uniquement pour le champ modifié
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   }
 
   const validateName = (name) => {
     const regex = /^[A-Za-z\s]{1,20}$/;
-    return regex.test(name) && !name == "";
+    return regex.test(name);
   };
 
   const validateEmail = (email) => {
-    const regex = /^[A-Za-z0-9]+@[A-Za-z0-9]+\.[A-Za-z]{2,}$/;
-    return regex.test(email) && !email == "";
+    const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    return regex.test(email);
   };
 
   const validatePassword = (password) => {
-    const regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,15}$/;
-    return regex.test(password) && !password == "";
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+    return regex.test(password);
   };
 
   const validateConfirmPassword = (password, confirmPassword) => {
@@ -45,55 +48,60 @@ function Signup() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    let errors = {};
 
+    // Effectuer la validation des champs de formulaire
+    const validationErrors = {};
+    
     if (!validateName(formData.name)) {
-      errors.name =
-        "Le nom est obligatoire et doit comporter uniquement des lettres et des espaces, avec une longueur maximale de 20 caractères.";
+      validationErrors.name = "Le nom doit comporter uniquement des lettres et des espaces, avec une longueur maximale de 20 caractères.";
     }
 
     if (!validateEmail(formData.email)) {
-      errors.email = "L'email est obligatoire et doit être au format correct.";
+      validationErrors.email = "L'adresse email est invalide.";
     }
 
     if (!validatePassword(formData.password)) {
-      errors.password =
-        "Le mot de passe doit contenir entre 6 et 15 caractères, avec au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.";
+      validationErrors.password = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et une longueur minimale de 6 caractères.";
     }
 
     if (!validateConfirmPassword(formData.password, formData.confirmPassword)) {
-      errors.confirmPassword = "Les mots de passe ne correspondent pas.";
+      validationErrors.confirmPassword = "Les mots de passe ne correspondent pas.";
     }
 
-    if (Object.keys(errors).length === 0) {
-      try {
-        const result = await axios.post(`http://127.0.0.1:8000/api/auth/register`, formData);
-        console.log("success");
-        alert("Vous êtes Inscrit");
-        setFormData({
-          name: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        });
-        console.log(result.data.data);
-        const token = result.data.data.token;
-        console.log("Token before setting:", token);
-        localStorage.setItem('usertoken', token);
-        const storedToken = localStorage.getItem('usertoken');
-        console.log("Token after retrieval:", storedToken);
-        cookie.set("usertoken", token);
-      } catch (error) {
-        if (error.response.status === 422) {
-          errors.email = "Email is already been taken for this Username";
-        } else {
-          setErrors("Internal Serveur Erreur");
-        }
+    // Si des erreurs de validation sont présentes, mettez à jour l'état des erreurs et arrêtez l'exécution
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    // Aucune erreur de validation, procéder à l'envoi du formulaire
+    try {
+      const result = await Axios.post(`/auth/${REGISTER}`, formData);
+      console.log("success");
+      alert("Inscription réussie !");
+
+      // Réinitialiser les données du formulaire après une inscription réussie
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+      // Stocker le token
+      const token = result.data.data.token;
+      localStorage.setItem("usertoken", token);
+      cookie.set("usertoken", token);
+
+    } catch (error) {
+      if (error.response && error.response.status === 422) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: "Cette adresse email est déjà associée à un compte existant.",
+        }));
+      } else {
+        setErrors("Erreur du serveur. Veuillez réessayer plus tard.");
       }
-      const combinedErrors = { ...errors };
-      setErrors(combinedErrors);
-    } else {
-      setErrors(errors);
     }
   }
 

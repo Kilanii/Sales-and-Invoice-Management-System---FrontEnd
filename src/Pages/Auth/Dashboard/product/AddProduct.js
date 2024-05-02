@@ -1,70 +1,85 @@
 import { useEffect, useState } from "react";
-import {createCategory } from "../../../../Api/Api";
+import {GetCategories, GetSupplier, createCategory, createproduct } from "../../../../Api/Api";
 import { Axios } from "../../../../Api/axios";
 import { Button, Form } from "react-bootstrap";
 
 function AddProduct() {
   const [form, setForm] = useState({
-    title:"Select Category",
+    name:"",
+    category:"Select Category",
     model:"",
-    s_price:"",
-    serialNumber:"",
-    category:"",
+    sales_price:"",
+    serial_number:"",
     unit:"",
     tax:"",
     supplier:"",
-    p_price:"",
+    purchase_price:"",
   });
-  const [image, setImage] = useState([]);
-  const [categories, setcategoies] = useState([]);
-  const [units, setUnits] = useState([]);
-  const [taxes, setTaxes] = useState([]);
+  const [categories, setcategory] = useState([]);
   const [suppliers, setSupplier] = useState([]);
+  const [categorydata, setcategorydata] = useState([]);
+  const [suppliersdata, setSuppliersData] = useState([])
 
-  const categoriesShow = categories.map((item)=> <option key={key} value={item.id}>{item.title}</option>)
-  const unitShow = units.map((item)=> <option key={key} value={item.id}>{item.title}</option>)
-  const taxShow = taxes.map((item)=> <option key={key} value={item.id}>{item.title}</option>)
-  const supplierShow = suppliers.map((item)=> <option key={key} value={item.id}>{item.title}</option>)
+
+  const categoriesShow = categories.map((category, index) => (
+    <option key={index} value={category.id}>{category}</option>
+  ))
+
+  const supplierShow = suppliers.map((supplier, index) => (
+    <option key={index} value={supplier.id}>{supplier}</option>
+  ))
 
   useEffect(() => {
-    Axios.get(`${category}`)
-      .then((data) => setcategory(data.data))
-      .catch((err) => console.log(err));
+    Axios.get(`/category/${GetCategories}`)
+    .then((response) => {
+      const categoryName = response.data.data.map(category => category.name);
+
+      setcategory(categoryName);
+    }) .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
-    Axios.get(`${unit}`)
-      .then((data) => setcategory(data.data))
-      .catch((err) => console.log(err));
+    Axios.get(`/supplier/${GetSupplier}`)
+    .then((response) => {
+      const supplierNames = response.data.data.suppliers.map(supplier => supplier.suplier_name);
+      const suppliersdata = response.data.data.suppliers
+      setSuppliersData(suppliersdata)
+      setSupplier(supplierNames);
+    }) .catch((err) => console.log(err));
   }, []);
-  
-  useEffect(() => {
-    Axios.get(`${tax}`)
-      .then((data) => setcategory(data.data))
-      .catch((err) => console.log(err));
-  }, []);
-  
-  useEffect(() => {
-    Axios.get(`${supplier}`)
-      .then((data) => setcategory(data.data))
-      .catch((err) => console.log(err));
-  }, []);
-  
+
+
   async function handleSubmit(e) {
     e.preventDefault();
-    form.append("image", image);
+  
+
     try {
-      await Axios.post(`${createCategory}`, form);
-      alert("New product Added");
+      const selectedCategory = categorydata.find(category => category.name === form.category);
+    if (!selectedCategory) {
+      console.log("Catégorie non trouvée");
+      return;
+    }
+    const categoryId = selectedCategory.id;
+
+    const selectedSupplier = suppliersdata.find(supplier => supplier.suplier_name === form.supplier);
+    if (!selectedSupplier) {
+      console.log("Fournisseur non trouvé");
+      return;
+    }
+    const supplierId = selectedSupplier.id;
+      await Axios.post(`/product/${createproduct}/${categoryId}/${supplierId}`, form);
+      alert("Nouveau produit ajouté");
+      window.location.pathname = "dashboard/products";
     } catch (error) {
       console.log(error);
     }
   }
 
-  function handleChange(e){
-  e.preventDefault();
-    setForm({...form, [e.target.name]: e.target.value })
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm({...form, [name]: value });
   }
+  console.log(form);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -73,21 +88,22 @@ function AddProduct() {
         <Form.Group controlId="title" className="col-md-6">
         <Form.Label>Product Name</Form.Label>
         <Form.Control
-          name="supplier"
+          name="name"
           type="text"
           placeholder="Enter product Name..."
-          value={form.title}
+          value={form.name}
           onChange={handleChange}
           required
         />
       </Form.Group>
-      <Form.Group controlId="serialNumber" className="col-md-6">
+
+      <Form.Group controlId="serial_number" className="col-md-6">
         <Form.Label>Serial Number</Form.Label>
         <Form.Control
-          name="supplier"
+          name="serial_number"
           type="text"
           placeholder="Enter Serial Number..."
-          value={form.serialNumber}
+          value={form.serial_number}
           onChange={handleChange}
           required
         />
@@ -97,7 +113,7 @@ function AddProduct() {
       <Form.Group controlId="model" className="mb-6">
         <Form.Label>model</Form.Label>
         <Form.Control
-          name="supplier"
+          name="model"
           type="text"
           placeholder="Enter model..."
           value={form.model}
@@ -105,6 +121,7 @@ function AddProduct() {
           required
         />
       </Form.Group>
+
       <Form.Group controlId="category">
         <Form.Label>category Name</Form.Label>
         <Form.Select
@@ -113,71 +130,69 @@ function AddProduct() {
           value={form.category}
           onChange={handleChange}
         >
-            <option disabled>Select Category</option>
+            <option value="">Select Category</option>
             {categoriesShow}
+
         </Form.Select>
       </Form.Group>
-      <Form.Group controlId="s_price">
+
+      <Form.Group controlId="sales_price">
         <Form.Label>Selling Price</Form.Label>
         <Form.Control
-          type="file"
-          value={form.s_price}
+          type="number"
+          value={form.sales_price}
           onChange={handleChange}
-          name="s_price"
+          name="sales_price"
           required
         />
       </Form.Group>
+
       <Form.Group controlId="unit">
         <Form.Label>Unit</Form.Label>
-        <Form.Select
-          name="unit"
+        <Form.Control
+          type="text"
           value={form.unit}
           onChange={handleChange}
-        >
-            {unitShow}
-        </Form.Select>
-      </Form.Group>
-      <Form.Group controlId="image">
-        <Form.Label>Image</Form.Label>
-        <Form.Control
-          name="image"
-          value={image}
-          //"multiple" ki tabda chtab3eth akther men img 
-          onChange={(e) => setImage(e.target.files)}
+          name="unit"
           required
         />
       </Form.Group>
+      
       <Form.Group controlId="tax">
         <Form.Label>Tax</Form.Label>
-        <Form.Select
-        name="tax"
+        <Form.Control
+          type="number"
           value={form.tax}
           onChange={handleChange}
-        >
-            {taxShow}
-        </Form.Select>
+          name="tax"
+          required
+        />
       </Form.Group>
       <Form.Group controlId="supplier">
+      <Form.Label>Supplier</Form.Label>
         <Form.Select
           name="supplier"
           value={form.supplier}
           onChange={handleChange}
         >
+            <option value="">Select Supplier</option>
             {supplierShow}
         </Form.Select>
       </Form.Group>
       <Form.Group controlId="p_price">
+      <Form.Label>Price</Form.Label>
         <Form.Control
-          name="p_price"
+        type="number"
+          name="purchase_price"
           value={form.p_price}
           onChange={handleChange}
           required
         />
       </Form.Group>
-      <Button variant="primary" type="submit" disabled={title.length < 1}>
+      <Button variant="primary" type="submit" disabled={form.length < 1}>
         Add Product
       </Button>
-    </Form>
+    </Form> 
   );
 }
 export default AddProduct;

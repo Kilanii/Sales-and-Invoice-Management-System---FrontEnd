@@ -1,49 +1,59 @@
-import { useEffect, useState } from "react";
-import {UpdateCategory } from "../../../../Api/Api";
-
+import {useEffect, useState } from "react";
+import {GetCategories, updateCategory } from "../../../../Api/Api";
 import { Axios } from "../../../../Api/axios";
 import { useParams } from "react-router-dom";
 
-function Managecategory() {
-  const [name, setName] = useState("");
-  const [disable, setDisable] = useState(true);
 
-  const {id} = useParams();
+function UpdateCategory() {
+  const { id } = useParams();
+  const [category, setCategory] = useState({});
+  const [name, setName] = useState('');
 
   useEffect(() => {
-    Axios.get(`http://127.0.0.1:8000/api/update-category/${id}`)
-      .then((data) => {
-        setName(data.data.name);
+    Axios.get(`/category/${GetCategories}/${id}`)
+      .then((response) => {
+        setName(response.data.data.name);
       })
-      .then(() => setDisable(false));
-  }, []);
-  async function handleSubmit(e) {
+      .catch((error) => console.log(error));
+  }, [id]);
+  
+  console.log(name);
+  console.log(category);
+
+  const handleChange = (e) => {
+    setName(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await Axios.post(`http://127.0.0.1:8000/api/update-category/${id}`, {
-        name: name,
-      });
+      await Axios.put(`/category/${updateCategory}/${id}`,{name:name}   );
+      alert("Succeful");
+      window.location.pathname = "dashboard/categories";
+      console.log('Catégorie mise à jour avec succès:');
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <h1>Formulaire d'inscription</h1>
-      <label for="name">User Name</label>
+      
+      <label htmlFor="name">Category New Name</label>
       <input
-        placeholder="Category Name"
-        type="text"
-        id="name"
-        name="name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
+        placeholder="Category New Name"
+        type="text" 
+          id="categoryName" 
+          value={name} 
+          onChange={handleChange}
       />
-      <button disabled={disable} type="submit" className="btn btn-primary">
+      
+      <button type="submit" className="btn btn-primary">
         Save modifications
       </button>
     </form>
   );
 }
-export default Managecategory;
+
+export default UpdateCategory;
